@@ -1,0 +1,6 @@
+/byz-api-gateway
+/byz-api-gateway.exe
+*.exe
+*.test
+.idea/
+.vscode/
