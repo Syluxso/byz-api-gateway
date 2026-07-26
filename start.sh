@@ -13,5 +13,7 @@ export BYZ_NOTIFICATIONS_URI="${BYZ_NOTIFICATIONS_URI:-http://127.0.0.1:8081}"
 export BYZ_DIRECTORY_URI="${BYZ_DIRECTORY_URI:-http://127.0.0.1:8086}"
 export BYZ_EVENTS_URI="${BYZ_EVENTS_URI:-http://127.0.0.1:8088}"
 export BYZ_FILES_URI="${BYZ_FILES_URI:-http://127.0.0.1:8089}"
+export BYZ_SEARCH_URI="${BYZ_SEARCH_URI:-http://127.0.0.1:8099}"
+export BYZ_INGEST_URI="${BYZ_INGEST_URI:-http://127.0.0.1:8100}"
 
 exec /opt/services/byz-api-gateway/byz-api-gateway

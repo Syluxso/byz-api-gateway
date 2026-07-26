@@ -27,13 +27,14 @@ func NewKafkaPublisher(brokers []string, enabled bool, accessTopic, usageTopic s
 	if usageTopic == "" {
 		usageTopic = "byz.api.usage"
 	}
+	// Idempotent producer (franz-go default) requires acks=all.
 	client, err := kgo.NewClient(
 		kgo.SeedBrokers(brokers...),
 		kgo.ClientID("byz-api-gateway"),
 		kgo.ProducerBatchMaxBytes(1_000_000),
-		kgo.RequiredAcks(kgo.LeaderAck()),
+		kgo.RequiredAcks(kgo.AllISRAcks()),
 		kgo.ProduceRequestTimeout(2*time.Second),
-		kgo.RecordRetries(1),
+		kgo.RecordRetries(3),
 	)
 	if err != nil {
 		return nil, err

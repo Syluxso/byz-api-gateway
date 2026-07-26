@@ -168,12 +168,14 @@ func main() {
 		emitAfter(publisher, r, requestID, route.ID, path, sw.status, durationMs)
 	})
 
-	handler := limiter.Middleware(gateway)
+	// Health routes live on mux; everything else goes through rate limit + proxy.
+	// (Previously mux was built but never set as Server.Handler.)
+	mux.Handle("/", limiter.Middleware(gateway))
 
 	addr := bind + ":" + port
 	srv := &http.Server{
 		Addr:              addr,
-		Handler:           handler,
+		Handler:           mux,
 		ReadHeaderTimeout: 10 * time.Second,
 		// No overall WriteTimeout — SSE / long responses must not be killed.
 	}

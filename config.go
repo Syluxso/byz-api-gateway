@@ -21,6 +21,8 @@ func loadRoutes() []Route {
 		{"directory", "/directory", "BYZ_DIRECTORY_URI", "http://127.0.0.1:8086"},
 		{"events", "/events", "BYZ_EVENTS_URI", "http://127.0.0.1:8088"},
 		{"files", "/files", "BYZ_FILES_URI", "http://127.0.0.1:8089"},
+		{"search", "/search", "BYZ_SEARCH_URI", "http://127.0.0.1:8099"},
+		{"ingest", "/ingest", "BYZ_INGEST_URI", "http://127.0.0.1:8100"},
 	}
 	out := make([]Route, 0, len(defs))
 	for _, d := range defs {

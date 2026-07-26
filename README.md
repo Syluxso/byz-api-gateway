@@ -21,6 +21,8 @@ JWT validation stays on each backend.
 | `/directory/**` | `BYZ_DIRECTORY_URI` | `http://127.0.0.1:8086` |
 | `/events/**` | `BYZ_EVENTS_URI` | `http://127.0.0.1:8088` |
 | `/files/**` | `BYZ_FILES_URI` | `http://127.0.0.1:8089` |
+| `/search/**` | `BYZ_SEARCH_URI` | `http://127.0.0.1:8099` |
+| `/ingest/**` | `BYZ_INGEST_URI` | `http://127.0.0.1:8100` |
 
 StripPrefix=1 (same as Java). Local health: `GET /actuator/health` → `{"status":"UP"}`.
 
