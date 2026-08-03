@@ -8,10 +8,12 @@ import (
 	"net/http/httputil"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
 
+	"github.com/MicahParks/keyfunc/v3"
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
 )
@@ -35,6 +37,7 @@ func (w *statusWriter) Flush() {
 func main() {
 	port := env("PORT", "8096")
 	bind := env("BIND", "0.0.0.0")
+	jwksURL := env("IAM_JWKS_URL", "https://iam.byzantineapp.dev/.well-known/jwks.json")
 	redisAddr := env("REDIS_HOST", "127.0.0.1") + ":" + env("REDIS_PORT", "6379")
 	redisPass := os.Getenv("REDIS_PASSWORD")
 	replenish := envInt("RATE_LIMIT_REPLENISH", 40)
@@ -44,9 +47,20 @@ func main() {
 	accessTopic := env("KAFKA_TOPIC_GATEWAY_ACCESS", "byz.gateway.access")
 	usageTopic := env("KAFKA_TOPIC_API_USAGE", "byz.api.usage")
 
+	logs := NewLogBuffer()
+	teeStdLog(logs, "byz-api-gateway")
+
 	routes := loadRoutes()
 	if len(routes) == 0 {
 		log.Fatal("no backend routes configured")
+	}
+
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+
+	jwks, err := keyfunc.NewDefaultCtx(ctx, []string{jwksURL})
+	if err != nil {
+		log.Fatalf("jwks: %v", err)
 	}
 
 	rdb := redis.NewClient(&redis.Options{
@@ -97,6 +111,20 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status":"UP"}`))
 	})
+	mux.HandleFunc("/api/v1/admin/logs", withJWT(jwks, func(w http.ResponseWriter, r *http.Request) {
+		applyCORS(w.Header(), r)
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		lines := 200
+		if v := r.URL.Query().Get("lines"); v != "" {
+			if n, err := strconv.Atoi(v); err == nil {
+				lines = n
+			}
+		}
+		writeJSON(w, http.StatusOK, logs.Tail(lines, r.URL.Query().Get("level")))
+	}))
 
 	gateway := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodOptions {
@@ -180,15 +208,13 @@ func main() {
 		// No overall WriteTimeout — SSE / long responses must not be killed.
 	}
 
-	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
-	defer stop()
-
 	go func() {
 		log.Printf("byz-api-gateway listening on http://%s redis=%s kafka=%v routes=%d",
 			addr, redisAddr, kafkaEnabled, len(routes))
 		for _, rt := range routes {
 			log.Printf("  route %s %s/** → %s", rt.ID, rt.Prefix, rt.Target.String())
 		}
+		logs.Add("INFO", "byz-api-gateway", "listening on "+addr, nil)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("http: %v", err)
 		}

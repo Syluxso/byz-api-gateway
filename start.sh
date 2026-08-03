@@ -15,5 +15,7 @@ export BYZ_EVENTS_URI="${BYZ_EVENTS_URI:-http://127.0.0.1:8088}"
 export BYZ_FILES_URI="${BYZ_FILES_URI:-http://127.0.0.1:8089}"
 export BYZ_SEARCH_URI="${BYZ_SEARCH_URI:-http://127.0.0.1:8099}"
 export BYZ_INGEST_URI="${BYZ_INGEST_URI:-http://127.0.0.1:8100}"
+export BYZ_CHAT_URI="${BYZ_CHAT_URI:-http://127.0.0.1:8102}"
+export BYZ_COMPACT_URI="${BYZ_COMPACT_URI:-http://127.0.0.1:8103}"
 
 exec /opt/services/byz-api-gateway/byz-api-gateway
