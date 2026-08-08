@@ -24,7 +24,11 @@ func loadRoutes() []Route {
 		{"search", "/search", "BYZ_SEARCH_URI", "http://127.0.0.1:8099"},
 		{"ingest", "/ingest", "BYZ_INGEST_URI", "http://127.0.0.1:8100"},
 		{"chat", "/chat", "BYZ_CHAT_URI", "http://127.0.0.1:8102"},
-		{"compact", "/compact", "BYZ_COMPACT_URI", "http://127.0.0.1:8103"},
+		{"agent", "/agent", "BYZ_AGENT_URI", "http://127.0.0.1:8103"},
+		// Temporary alias while admin/deploy cut over from byz-compact.
+		{"compact", "/compact", "BYZ_AGENT_URI", "http://127.0.0.1:8103"},
+		{"fetch", "/fetch", "BYZ_FETCH_URI", "http://127.0.0.1:8104"},
+		{"managed", "/managed", "BYZ_MANAGED_URI", "http://127.0.0.1:8105"},
 	}
 	out := make([]Route, 0, len(defs))
 	for _, d := range defs {

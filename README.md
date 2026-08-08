@@ -24,9 +24,14 @@ JWT validation stays on each backend.
 | `/search/**` | `BYZ_SEARCH_URI` | `http://127.0.0.1:8099` |
 | `/ingest/**` | `BYZ_INGEST_URI` | `http://127.0.0.1:8100` |
 | `/chat/**` | `BYZ_CHAT_URI` | `http://127.0.0.1:8102` |
-| `/compact/**` | `BYZ_COMPACT_URI` | `http://127.0.0.1:8103` |
+| `/agent/**` | `BYZ_AGENT_URI` | `http://127.0.0.1:8103` |
+| `/compact/**` | `BYZ_AGENT_URI` | alias during cutover |
+| `/fetch/**` | `BYZ_FETCH_URI` | `http://127.0.0.1:8104` |
+| `/managed/**` | `BYZ_MANAGED_URI` | `http://127.0.0.1:8105` |
 
 StripPrefix=1 (same as Java). Local health: `GET /actuator/health` → `{"status":"UP"}`.
+
+Managed product API: `GET /managed/actuator/health` → byz-managed-api.
 
 Admin log tail (JWT via `IAM_JWKS_URL`): `GET /api/v1/admin/logs` — used by Admin Logs → API Gateway.
 

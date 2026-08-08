@@ -22,7 +22,9 @@ export BYZ_FILES_URI=http://127.0.0.1:8089
 export BYZ_SEARCH_URI=http://127.0.0.1:8099
 export BYZ_INGEST_URI=http://127.0.0.1:8100
 export BYZ_CHAT_URI=http://127.0.0.1:8102
-export BYZ_COMPACT_URI=http://127.0.0.1:8103
+export BYZ_AGENT_URI=http://127.0.0.1:8103
+export BYZ_FETCH_URI=http://127.0.0.1:8104
+export BYZ_MANAGED_URI=http://127.0.0.1:8105
 ```
 
 | Item | Value |
