@@ -25,6 +25,7 @@ export BYZ_CHAT_URI=http://127.0.0.1:8102
 export BYZ_AGENT_URI=http://127.0.0.1:8103
 export BYZ_FETCH_URI=http://127.0.0.1:8104
 export BYZ_MANAGED_URI=http://127.0.0.1:8105
+export BYZ_KAN_URI=http://127.0.0.1:8109
 ```
 
 | Item | Value |
@@ -44,4 +45,5 @@ export BYZ_MANAGED_URI=http://127.0.0.1:8105
 ```bash
 curl -s http://127.0.0.1:8096/actuator/health
 curl -s https://api.byzantineapp.dev/iam/actuator/health
+curl -s https://api.byzantineapp.dev/kan/healthz
 ```

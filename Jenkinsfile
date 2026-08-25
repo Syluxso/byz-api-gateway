@@ -42,6 +42,7 @@ pipeline {
                     sleep 3
                     sudo supervisorctl status "${SUPERVISOR_PROGRAM}" || true
                     curl -sf "http://127.0.0.1:8096/actuator/health" || true
+                    curl -sf "http://127.0.0.1:8096/kan/healthz" || true
                 '''
             }
         }
@@ -49,7 +50,7 @@ pipeline {
 
     post {
         success {
-            echo 'byz-api-gateway deployed (Go edge)'
+            echo 'byz-api-gateway deployed (Go edge); /kan → :8109'
         }
         failure {
             echo 'Build or deploy failed. Ensure Go, Redis, and sudoers allow deploy.'

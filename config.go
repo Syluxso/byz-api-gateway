@@ -29,6 +29,7 @@ func loadRoutes() []Route {
 		{"compact", "/compact", "BYZ_AGENT_URI", "http://127.0.0.1:8103"},
 		{"fetch", "/fetch", "BYZ_FETCH_URI", "http://127.0.0.1:8104"},
 		{"managed", "/managed", "BYZ_MANAGED_URI", "http://127.0.0.1:8105"},
+		{"kan", "/kan", "BYZ_KAN_URI", "http://127.0.0.1:8109"},
 	}
 	out := make([]Route, 0, len(defs))
 	for _, d := range defs {
