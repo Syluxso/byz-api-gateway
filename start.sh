@@ -20,5 +20,6 @@ export BYZ_AGENT_URI="${BYZ_AGENT_URI:-${BYZ_COMPACT_URI:-http://127.0.0.1:8103}
 export BYZ_FETCH_URI="${BYZ_FETCH_URI:-http://127.0.0.1:8104}"
 export BYZ_MANAGED_URI="${BYZ_MANAGED_URI:-http://127.0.0.1:8105}"
 export BYZ_KAN_URI="${BYZ_KAN_URI:-http://127.0.0.1:8109}"
+export BYZ_BB_URI="${BYZ_BB_URI:-http://127.0.0.1:8110}"
 
 exec /opt/services/byz-api-gateway/byz-api-gateway

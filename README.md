@@ -29,11 +29,13 @@ JWT validation stays on each backend.
 | `/fetch/**` | `BYZ_FETCH_URI` | `http://127.0.0.1:8104` |
 | `/managed/**` | `BYZ_MANAGED_URI` | `http://127.0.0.1:8105` |
 | `/kan/**` | `BYZ_KAN_URI` | `http://127.0.0.1:8109` |
+| `/bb/**` | `BYZ_BB_URI` | `http://127.0.0.1:8110` |
 
 StripPrefix=1 (same as Java). Local health: `GET /actuator/health` → `{"status":"UP"}`.
 
 Managed product API: `GET /managed/actuator/health` → byz-managed-api.  
-Kanban: `GET /kan/healthz` → byz-kan.
+Kanban: `GET /kan/healthz` → byz-kan.  
+Builder Buddy: `GET /bb/healthz` → bb-api. JWT stays on bb-api.
 
 Admin log tail (JWT via `IAM_JWKS_URL`): `GET /api/v1/admin/logs` — used by Admin Logs → API Gateway.
 

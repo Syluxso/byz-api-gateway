@@ -48,6 +48,14 @@ func TestMatchRoute(t *testing.T) {
 	if !ok || r.ID != "kan" || rest != "/healthz" {
 		t.Fatalf("kan health: ok=%v id=%s rest=%s", ok, r.ID, rest)
 	}
+	r, rest, ok = matchRoute(routes, "/bb/healthz")
+	if !ok || r.ID != "bb" || rest != "/healthz" {
+		t.Fatalf("bb health: ok=%v id=%s rest=%s", ok, r.ID, rest)
+	}
+	r, rest, ok = matchRoute(routes, "/bb/api/me")
+	if !ok || r.ID != "bb" || rest != "/api/me" {
+		t.Fatalf("bb api: ok=%v id=%s rest=%s", ok, r.ID, rest)
+	}
 	_, _, ok = matchRoute(routes, "/nope")
 	if ok {
 		t.Fatal("expected no match")
