@@ -30,6 +30,20 @@ JWT validation stays on each backend.
 | `/managed/**` | `BYZ_MANAGED_URI` | `http://127.0.0.1:8105` |
 | `/kan/**` | `BYZ_KAN_URI` | `http://127.0.0.1:8109` |
 | `/bb/**` | `BYZ_BB_URI` | `http://127.0.0.1:8110` |
+| `/pay/**` | `BYZ_PAY_URI` | `http://127.0.0.1:8230` (byz-pay) |
+
+Two `/pay` paths are not proxied:
+
+- `POST /pay/webhooks/stripe/{configId}` is handled here: the gateway reads
+  that config's signing secret from byz-pay (`/internal/v1/provider-configs/{id}/webhook-secret`,
+  with its own client_credentials token from `GATEWAY_CLIENT_ID` /
+  `GATEWAY_CLIENT_SECRET`, cached 5 minutes), checks `Stripe-Signature`
+  over the raw body (5 minute window), publishes the raw body and signature
+  to `byz.pay.stripe.webhook` (`KAFKA_TOPIC_PAY_STRIPE_WEBHOOK`) and answers
+  200 only once Kafka accepted it. Not rate limited. Without the client
+  credentials it answers 503. The gateway's client id must be in byz-pay's
+  `PAY_INTERNAL_CLIENTS`.
+- `/pay/internal/**` answers 404: byz-pay's internal routes are never public.
 
 StripPrefix=1 (same as Java). Local health: `GET /actuator/health` → `{"status":"UP"}`.
 
@@ -62,7 +76,17 @@ OPTIONS and `/actuator/**` skip the limiter.
 | `byz.gateway.access` | every non-actuator request | `X-Request-Id` |
 | `byz.api.usage` | API-key JWT (`user_api_key` / `tenant_api_key`) | `tokenId` |
 
-Disable with `BYZ_KAFKA_ENABLED=false`.
+Disable with `BYZ_KAFKA_ENABLED=false`. Topics are created by byz-events, never by this service.
+
+Events are published through `byz-platform/events`. The flat camelCase shape is
+unchanged; the platform adds `producer`, `traceId` (same value as `requestId`),
+and `tenantId` / `userId` (null on access events).
+
+## Platform endpoints
+
+- `GET /readyz` pings Redis and reports `DOWN` when the rate-limit backend is unreachable. `/healthz` and `/actuator/health` stay static liveness.
+- `GET /metrics` Prometheus, including `byz_http_request_duration_seconds{route="proxy/<id>"}`.
+- `GET /api/v1/admin/logs` last 500 log lines, JWT required.
 
 ## Run locally
 

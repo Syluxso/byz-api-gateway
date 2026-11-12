@@ -2,8 +2,9 @@ package main
 
 import (
 	"net/url"
-	"os"
 	"strings"
+
+	"github.com/Syluxso/byz-platform/config"
 )
 
 type Route struct {
@@ -12,6 +13,8 @@ type Route struct {
 	Target *url.URL
 }
 
+// loadRoutes reads the BYZ_*_URI route table. This stays in the gateway on
+// purpose: routing policy is this service's domain, not the platform's.
 func loadRoutes() []Route {
 	defs := []struct {
 		id, prefix, env, def string
@@ -31,10 +34,13 @@ func loadRoutes() []Route {
 		{"managed", "/managed", "BYZ_MANAGED_URI", "http://127.0.0.1:8105"},
 		{"kan", "/kan", "BYZ_KAN_URI", "http://127.0.0.1:8109"},
 		{"bb", "/bb", "BYZ_BB_URI", "http://127.0.0.1:8110"},
+		// byz-pay. /pay/webhooks/stripe/* and /pay/internal/* never proxy:
+		// the gateway handles the first itself and refuses the second.
+		{"pay", "/pay", "BYZ_PAY_URI", "http://127.0.0.1:8230"},
 	}
 	out := make([]Route, 0, len(defs))
 	for _, d := range defs {
-		raw := env(d.env, d.def)
+		raw := config.Env(d.env, d.def)
 		u, err := url.Parse(raw)
 		if err != nil || u.Scheme == "" || u.Host == "" {
 			continue
@@ -55,41 +61,4 @@ func matchRoute(routes []Route, path string) (Route, string, bool) {
 		}
 	}
 	return Route{}, "", false
-}
-
-func env(key, def string) string {
-	if v := os.Getenv(key); v != "" {
-		return v
-	}
-	return def
-}
-
-func envBool(key string, def bool) bool {
-	v := os.Getenv(key)
-	if v == "" {
-		return def
-	}
-	switch strings.ToLower(v) {
-	case "1", "true", "yes", "on":
-		return true
-	case "0", "false", "no", "off":
-		return false
-	default:
-		return def
-	}
-}
-
-func envInt(key string, def int) int {
-	v := os.Getenv(key)
-	if v == "" {
-		return def
-	}
-	n := 0
-	for _, c := range v {
-		if c < '0' || c > '9' {
-			return def
-		}
-		n = n*10 + int(c-'0')
-	}
-	return n
 }
